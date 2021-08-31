@@ -30,8 +30,14 @@ fetch('https://countries.trevorblades.com/', {
 
 
 
-continentNames.addEventListener('change', e => {
+continentNames.addEventListener('change', async e => {
     let continentCode = e.target.value
+    let allCountry = await theCountries(continentCode)
+    console.log(allCountry)
+})
+
+
+function theCountries(continentCode){
 
     fetch('https://countries.trevorblades.com/', {
         method: 'POST',
@@ -40,8 +46,8 @@ continentNames.addEventListener('change', e => {
         },
         body: JSON.stringify({
          query: `
-         query getCountries($code:ID!){
-            continent(continentCode: $code){
+         query getCountries($code: ID!){
+            continent(code: $code){
                   countries {
                     name
                   }
@@ -51,14 +57,9 @@ continentNames.addEventListener('change', e => {
         }),
         variables: {
             code: continentCode
-        },
+        }
+
     }).then(res => res.json())
     .then((result) => console.log(result))
-    
 
-    
-    }
-)
-
-
-   
+}
