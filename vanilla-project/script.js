@@ -27,7 +27,10 @@ queryFetch(
 continentNames.addEventListener('change', async e => {
     let continentCode = e.target.value
     let allCountry = await theCountries(continentCode)
-    console.log(allCountry)
+    allCountry.forEach((country) => {
+        countryNames.innerHTML += country.name
+    })
+    
 })
 
 
