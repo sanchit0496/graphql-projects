@@ -17,7 +17,6 @@ fetch('https://countries.trevorblades.com/', {
      `
     })
 })
-
 .then(data => data.json())
 .then(results => {
     results.data.continents.forEach((cName) => {
@@ -28,8 +27,38 @@ fetch('https://countries.trevorblades.com/', {
     })
 });
 
-continentNames.addEventListener('change', getCountries(e.target.value))
 
-function getCountries(continentCode){
 
-}
+
+continentNames.addEventListener('change', e => {
+    let continentCode = e.target.value
+
+    fetch('https://countries.trevorblades.com/', {
+        method: 'POST',
+        headers: {
+            "Content-Type" : "application/json"
+        },
+        body: JSON.stringify({
+         query: `
+         query getCountries($code:ID!){
+            continent(continentCode: $code){
+                  countries {
+                    name
+                  }
+                }
+          }
+        `, 
+        }),
+        variables: {
+            code: continentCode
+        },
+    }).then(res => res.json())
+    .then((result) => console.log(result))
+    
+
+    
+    }
+)
+
+
+   
