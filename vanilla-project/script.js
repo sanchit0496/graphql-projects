@@ -1,23 +1,17 @@
 let continentNames = document.getElementById('continent-names')
 let countryNames = document.getElementById('country-names')
 
-fetch('https://countries.trevorblades.com/', {
-    method: 'POST',
-    headers: {
-        "Content-Type" : "application/json"
-    },
-    body: JSON.stringify({
-     query: `
-     query{
-        continents{
-          code
-          name
-        }
-      }
-     `
-    })
-})
-.then(data => data.json())
+
+queryFetch(
+    `
+  query {
+    continents {
+      name
+      code
+    }
+  }
+`, {}
+)
 .then(results => {
     results.data.continents.forEach((cName) => {
         let option = document.createElement('option')
@@ -38,28 +32,31 @@ continentNames.addEventListener('change', async e => {
 
 
 function theCountries(continentCode){
+    return queryFetch(
+        `
+        query getCountries($code: ID!) {
+            continent(code: $code) {
+              countries {
+                name
+              }
+            }
+          }
+        `, {code: continentCode}
+    ).then((data) => {return data.data.continent.countries})
+}
 
-    fetch('https://countries.trevorblades.com/', {
+
+
+//query boilerplate for the data fetching into JSON format
+function queryFetch(query, variables){
+    return fetch('https://countries.trevorblades.com/', {
         method: 'POST',
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-         query: `
-         query getCountries($code: ID!){
-            continent(code: $code){
-                  countries {
-                    name
-                  }
-                }
-          }
-        `, 
-        }),
-        variables: {
-            code: continentCode
-        }
-
+        body:JSON.stringify({
+            query: query,
+            variables: variables
+        })
     }).then(res => res.json())
-    .then((result) => console.log(result))
-
 }
